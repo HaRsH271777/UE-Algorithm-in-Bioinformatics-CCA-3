@@ -226,3 +226,137 @@ def merge_fragments(fragments: list) -> str:
         str: The combined, single sequence.
     """
     return "".join(fragments)
+
+# --- Part B: Essential DNA Algorithms ---
+
+# Question 4: DNA Transcription
+
+def transcribe(seq: str, strand_type: str = 'coding') -> str:
+    """
+    Converts a DNA sequence to its corresponding RNA sequence.
+    
+    Args:
+        seq (str): The DNA sequence.
+        strand_type (str, optional): The strand to transcribe. 
+                                     'coding' (T->U) or 'template' (A->U, T->A, C->G, G->C).
+                                     Defaults to 'coding'.
+                                     
+    Returns:
+        str: The RNA sequence.
+        
+    Raises:
+        ValueError: If strand_type is not 'coding' or 'template'.
+    """
+    seq = seq.upper()
+    
+    if strand_type == 'coding':
+        # Easiest way: just replace T with U
+        return seq.replace('T', 'U')
+        
+    elif strand_type == 'template':
+        # Map template DNA base to RNA base
+        template_map = {'A': 'U', 'T': 'A', 'G': 'C', 'C': 'G'}
+        rna_list = []
+        for nuc in seq:
+            if nuc not in template_map:
+                raise ValueError(f"Invalid nucleotide for template: {nuc}")
+            rna_list.append(template_map[nuc])
+        return "".join(rna_list)
+        
+    else:
+        raise ValueError("strand_type must be 'coding' or 'template'")
+
+def batch_transcribe(sequences: list, strand_type: str = 'coding') -> list:
+    """
+    Runs transcription on a list of DNA sequences.
+    
+    Args:
+        sequences (list): A list of DNA sequence strings.
+        strand_type (str, optional): 'coding' or 'template'. Defaults to 'coding'.
+        
+    Returns:
+        list: A list of the resulting RNA sequences.
+    """
+    return [transcribe(seq, strand_type) for seq in sequences]
+
+
+# Question 5: Reverse Complement Generation
+
+# Define the full complement map, including degenerate nucleotides
+COMPLEMENT_MAP = {
+    'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G',
+    'R': 'Y', 'Y': 'R', # Purine <-> Pyrimidine
+    'S': 'S', 'W': 'W', # Strong <-> Weak (self-complementary)
+    'K': 'M', 'M': 'K', # Keto <-> Amino
+    'B': 'V', 'V': 'B',
+    'D': 'H', 'H': 'D',
+    'N': 'N', # Any
+    # Add lowercase just in case, though we primarily uppercase
+    'a': 't', 't': 'a', 'g': 'c', 'c': 'g',
+}
+
+# Add all other degenerate complements
+COMPLEMENT_MAP.update({k.lower(): v.lower() for k, v in COMPLEMENT_MAP.items()})
+
+
+def reverse_complement(seq: str) -> str:
+    """
+    Generates the reverse complement of a DNA sequence.
+    
+    Handles standard (ATGC) and degenerate (R, Y, S, etc.) nucleotides.
+    Assumes input is 5'-3' and returns 5'-3' reverse complement.
+    
+    Args:
+        seq (str): The 5'-3' DNA sequence.
+        
+    Returns:
+        str: The 5'-3' reverse complement sequence.
+    """
+    # An efficient way using str.translate
+    # 1. Create the translation table
+    # We must use all 256 byte values for maketrans
+    
+    # Simple, human-readable loop approach (more student-like)
+    seq = seq.upper()
+    complement_list = []
+    
+    for nuc in seq:
+        if nuc in COMPLEMENT_MAP:
+            complement_list.append(COMPLEMENT_MAP[nuc])
+        else:
+            # Handle any characters not in our map (like '-')
+            complement_list.append(nuc) 
+            
+    # 1. Get complement
+    complement_seq = "".join(complement_list)
+    
+    # 2. Reverse it
+    reverse_comp_seq = complement_seq[::-1]
+    
+    return reverse_comp_seq
+
+def reverse_complement_optimized(seq: str) -> str:
+    """
+    A more optimized version of reverse_complement using str.translate.
+    (For discussion in Part C)
+    
+    Args:
+        seq (str): The 5'-3' DNA sequence.
+        
+    Returns:
+        str: The 5'-3' reverse complement sequence.
+    """
+    seq = seq.upper()
+    
+    # Define the characters to be replaced and their replacements
+    in_chars = "ATGCYRSwKMBDHVN"
+    out_chars = "TACGRYSWMKVHDBN"
+    
+    # Create the translation table
+    translation_table = str.maketrans(in_chars, out_chars)
+    
+    # 1. Get complement using the translation table
+    complement_seq = seq.translate(translation_table)
+    
+    # 2. Reverse the string
+    return complement_seq[::-1]

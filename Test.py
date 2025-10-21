@@ -70,6 +70,58 @@ class TestDnaTools(unittest.TestCase):
         
         seq_empty = ""
         self.assertEqual(dnat.split_into_codons(seq_empty), [])
+    
+    # --- Part B Tests ---
+
+    def test_q4_transcription_coding(self):
+        """Test transcription of the coding strand."""
+        seq = "ATGCTTGATAG"
+        rna = dnat.transcribe(seq, strand_type='coding')
+        self.assertEqual(rna, "AUGCUUGAUAG")
+
+    def test_q4_transcription_template(self):
+        """Test transcription of the template strand."""
+        # Coding:   5'-ATGC-3'
+        # Template: 3'-TACG-5'
+        seq = "TACG" 
+        rna = dnat.transcribe(seq, strand_type='template')
+        # RNA:      5'-AUGC-3'
+        self.assertEqual(rna, "AUGC")
+
+    def test_q4_transcription_invalid(self):
+        """Test transcription with an invalid strand type."""
+        with self.assertRaises(ValueError):
+            dnat.transcribe("ATGC", strand_type='invalid')
+
+    def test_q5_reverse_complement_simple(self):
+        """Test reverse complement with a simple sequence."""
+        seq = "ATGC"
+        # Complement: TACG
+        # Reverse: GCAT
+        self.assertEqual(dnat.reverse_complement(seq), "GCAT")
+
+    def test_q5_reverse_complement_degenerate(self):
+        """Test reverse complement with degenerate nucleotides."""
+        # Seq:      5'-AART-Y-SW-3'
+        # Comp:     3'-TTYR-A-SW-5' (S/W are self)
+        # RevComp:  5'-WS-A-RYTT-3'
+        seq = "AARTYSW"
+        self.assertEqual(dnat.reverse_complement(seq), "WSARYTT")
+        
+    def test_q5_reverse_complement_optimized(self):
+        """Test the optimized reverse complement function."""
+        seq = "AARTYSW"
+        # Compare the optimized and simple versions
+        self.assertEqual(
+            dnat.reverse_complement(seq), 
+            dnat.reverse_complement_optimized(seq)
+        )
+        self.assertEqual(dnat.reverse_complement_optimized("ATGC"), "GCAT")
+
+    def test_q5_reverse_complement_empty(self):
+        """Test reverse complement on an empty sequence."""
+        self.assertEqual(dnat.reverse_complement(""), "")
+        
 
 
 if __name__ == '__main__':
