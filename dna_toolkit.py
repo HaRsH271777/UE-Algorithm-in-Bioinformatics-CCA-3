@@ -360,3 +360,91 @@ def reverse_complement_optimized(seq: str) -> str:
     
     # 2. Reverse the string
     return complement_seq[::-1]
+
+
+# --- Part C: Testing (Helper Function) ---
+
+# Question 7: Test Data Generator
+
+def generate_random_dna(length: int) -> str:
+    """
+    Generates a random DNA sequence of a given length.
+    
+    Args:
+        length (int): The desired length of the sequence.
+        
+    Returns:
+        str: A random DNA sequence.
+    """
+    return "".join(random.choice('ATGC') for _ in range(length))
+
+
+# --- Main execution block for demonstration ---
+
+if __name__ == "__main__":
+    """
+    Demonstrates the key algorithms and results.
+    """
+    
+    print("===== Assignment 1: DNA Toolkit Demonstration =====\n")
+    
+    # --- Part A Demo ---
+    print("--- Part A: DNA Class and Basic Ops ---")
+    try:
+        dna_seq = DNA("atgCgTaaGatg")
+        print(f"Valid Sequence: {dna_seq}")
+        print(f"Length: {len(dna_seq)}")
+        print(f"Counts: {dna_seq.nucleotide_count()}")
+        print(f"Stats (%): {dna_seq.basic_statistics()}")
+    except ValueError as e:
+        print(e)
+        
+    # Test validation
+    try:
+        invalid_seq = DNA("ATGCXGAT")
+    except ValueError as e:
+        print(f"\nSuccessfully caught error: {e}")
+
+    # Q3 Demo
+    print("\n--- Q3: String Manipulation ---")
+    dirty_seq = "  atgc-gtta\n--NNN-R-Y  "
+    print(f"Original dirty seq: '{dirty_seq}'")
+    cleaned_seq = remove_non_nucleotides(dirty_seq, valid_chars='ATGC')
+    print(f"Cleaned (ATGC only): '{cleaned_seq}'")
+    
+    codons = split_into_codons("ATGCGATAG")
+    print(f"Codons: {codons}")
+    codons_incomplete = split_into_codons("ATGCGA")
+    print(f"Codons (complete): {codons_incomplete}")
+    
+    fragments = ["ATGC", "GGTA", "CAAT"]
+    merged = merge_fragments(fragments)
+    print(f"Merged fragments: {merged}")
+    
+    # --- Part B Demo ---
+    print("\n--- Part B: Essential Algorithms ---")
+    
+    # Q4 Demo
+    coding_strand = "ATGCATGCATGC"
+    template_strand = "TACGTACGTACG" # Complement of the coding strand
+    
+    print(f"Coding strand:    5'-{coding_strand}-3'")
+    print(f"Template strand:  3'-{template_strand}-5'")
+    
+    rna_from_coding = transcribe(coding_strand, strand_type='coding')
+    print(f"RNA (from coding):  5'-{rna_from_coding}-3'")
+    
+    rna_from_template = transcribe(template_strand, strand_type='template')
+    print(f"RNA (from template): 5'-{rna_from_template}-3'")
+    
+    # Q5 Demo
+    print("\n--- Q5: Reverse Complement ---")
+    seq_to_revcomp = "AAATTTGGGCCCRYSWKM"
+    rev_comp = reverse_complement(seq_to_revcomp)
+    rev_comp_opt = reverse_complement_optimized(seq_to_revcomp)
+    
+    print(f"Original (5'-3'): {seq_to_revcomp}")
+    print(f"RevComp (5'-3'):  {rev_comp}")
+    print(f"RevComp (Opt):    {rev_comp_opt}")
+    
+    print("\n===== Demonstration Complete =====")

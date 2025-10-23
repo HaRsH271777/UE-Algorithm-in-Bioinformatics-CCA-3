@@ -70,7 +70,7 @@ class TestDnaTools(unittest.TestCase):
         
         seq_empty = ""
         self.assertEqual(dnat.split_into_codons(seq_empty), [])
-    
+
     # --- Part B Tests ---
 
     def test_q4_transcription_coding(self):
@@ -121,8 +121,20 @@ class TestDnaTools(unittest.TestCase):
     def test_q5_reverse_complement_empty(self):
         """Test reverse complement on an empty sequence."""
         self.assertEqual(dnat.reverse_complement(""), "")
-        
 
+    # --- Part C Tests ---
+    
+    def test_q7_data_generator(self):
+        """Test the random DNA generator."""
+        seq10 = dnat.generate_random_dna(10)
+        self.assertEqual(len(seq10), 10)
+        # Check if all chars are valid
+        is_valid = all(c in 'ATGC' for c in seq10)
+        self.assertTrue(is_valid)
 
+        seq0 = dnat.generate_random_dna(0)
+        self.assertEqual(seq0, "")
+
+# This allows running the tests from the command line
 if __name__ == '__main__':
     unittest.main()
